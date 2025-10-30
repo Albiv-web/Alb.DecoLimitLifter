@@ -1,9 +1,10 @@
 using System;
-using BrilliantSkies.Modding;         // GamePlugin / GamePlugin_PostLoad
+using BrilliantSkies.Modding;   // GamePlugin interfaces
 using HarmonyLib;
 
 namespace DecoLimitLifter
 {
+    // Loaded by FtD’s plugin system. Manual: implement GamePlugin or GamePlugin_PostLoad
     public class FtDInterface : GamePlugin_PostLoad
     {
         public string name => "DecoLimitLifter";
@@ -11,12 +12,12 @@ namespace DecoLimitLifter
 
         public void OnLoad()
         {
-            // Apply all Harmony patches in this assembly
             var harmony = new Harmony("alb.ftd.decolimit");
             harmony.PatchAll(typeof(FtDInterface).Assembly);
         }
 
         public bool AfterAllPluginsLoaded() => true;
+
         public void OnSave() { }
     }
 }
