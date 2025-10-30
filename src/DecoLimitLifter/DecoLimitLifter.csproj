@@ -4,11 +4,11 @@
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
     <Deterministic>true</Deterministic>
-    <!-- You can keep or delete Properties/AssemblyInfo.cs. If you keep it, leave this OFF to avoid duplicate attributes -->
+    <!-- If you keep Properties/AssemblyInfo.cs, leave this false so you don't get duplicate attributes -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
-  <!-- FtD game assemblies (adjust names below to match what's actually in your Managed\ folder) -->
+  <!-- FtD game assemblies (adjust names below to match your Managed\ folder exactly) -->
   <ItemGroup>
     <!-- Always present -->
     <Reference Include="UnityEngine.CoreModule">
@@ -51,7 +51,7 @@
     -->
   </ItemGroup>
 
-  <!-- Harmony (you added it to the repo root; this path is relative to the csproj) -->
+  <!-- Harmony (you put 0Harmony.dll in the repo root; this path is relative to the csproj) -->
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>..\..\0Harmony.dll</HintPath>
