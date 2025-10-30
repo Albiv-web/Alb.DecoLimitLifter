@@ -4,7 +4,7 @@ using HarmonyLib;
 
 namespace DecoLimitLifter
 {
-    // Loaded by FtD’s plugin system. Manual: implement GamePlugin or GamePlugin_PostLoad
+    // Loaded by FtD’s plugin system (not BepInEx).
     public class FtDInterface : GamePlugin_PostLoad
     {
         public string name => "DecoLimitLifter";
