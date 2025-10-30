@@ -4,15 +4,23 @@
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
     <Deterministic>true</Deterministic>
+    <!-- You can keep or delete Properties/AssemblyInfo.cs. If you keep it, leave this OFF to avoid duplicate attributes -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
-  <!-- FtD game assemblies (adjust names if needed; see Managed folder) -->
+  <!-- FtD game assemblies (adjust names below to match what's actually in your Managed\ folder) -->
   <ItemGroup>
-    <Reference Include="Modding">
-      <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\Modding.dll</HintPath>
+    <!-- Always present -->
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- Variant A (some builds name these like this) -->
     <Reference Include="Core">
       <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\Core.dll</HintPath>
       <Private>false</Private>
@@ -25,16 +33,28 @@
       <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\Ui.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+
+    <!-- Variant B (if your Managed\ uses BrilliantSkies.* names instead, comment A and uncomment B) -->
+    <!--
+    <Reference Include="BrilliantSkies.Core">
+      <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\BrilliantSkies.Core.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="BrilliantSkies.Ftd">
+      <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\BrilliantSkies.Ftd.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="BrilliantSkies.Ui">
+      <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\BrilliantSkies.Ui.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    -->
   </ItemGroup>
 
-  <!-- Harmony (local copy you ship with the mod) -->
+  <!-- Harmony (you added it to the repo root; this path is relative to the csproj) -->
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>$(SolutionDir)lib\0Harmony.dll</HintPath>
+      <HintPath>..\..\0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
