@@ -1,16 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <AssemblyName>DecoLimitLifter</AssemblyName>
+    <RootNamespace>DecoLimitLifter</RootNamespace>
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
-    <AssemblyName>Alb.DecoLimitLifter</AssemblyName>
-    <RootNamespace>DecoLimitLifter</RootNamespace>
-    <Deterministic>true</Deterministic>
   </PropertyGroup>
 
-  <!-- Reference game assemblies without committing them.
-       Set an env var FTD_DIR to your install path. -->
+  <!-- Reference game + BepInEx assemblies from your local install -->
   <ItemGroup>
+    <!-- BepInEx core & Harmony -->
+    <Reference Include="BepInEx">
+      <HintPath>$(FTD_DIR)\BepInEx\core\BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(FTD_DIR)\BepInEx\core\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- Game assemblies -->
     <Reference Include="Assembly-CSharp">
       <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
@@ -21,9 +30,8 @@
     </Reference>
   </ItemGroup>
 
+  <!-- No BepInEx NuGets needed -->
   <ItemGroup>
-    <PackageReference Include="BepInEx.Core" Version="5.*" />
-    <PackageReference Include="HarmonyX" Version="2.*" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" PrivateAssets="All" />
+    <!-- Keep this empty or add analyzers/utilities you actually use from nuget.org -->
   </ItemGroup>
 </Project>
