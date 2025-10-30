@@ -12,21 +12,21 @@ namespace DecoLimitLifter.ExtendedSerialization
 
         public static void Serialise(SuperSaver self, byte[] list, ref uint startByte, ulong objectId, byte bytesToWrite)
         {
-            // object id (unchanged)
+            // 1) object id (unchanged)
             ByteConversion.ConvertInAnUnsignedInt(list, startByte, bytesToWrite, objectId);
             startByte += (uint)bytesToWrite;
 
             uint headerLenBytes = self.HeaderCount * 7U;
             uint dataLenBytes = self._datasWrittenSorted;
 
+            // If it fits legacy (2B headerLen + var-chunk dataLen), write legacy
             bool fitsLegacy = headerLenBytes <= CHUNK && NeededChunks(dataLenBytes) <= MAX_CHUNKS;
 
             if (fitsLegacy)
             {
-                // Legacy: [headerLen:UInt16][pad:UInt16=0][dataLen:varChunks]
+                // Legacy: [UInt16 headerLen][UInt16 pad=0][dataLen split into 16-bit chunks <=100]
                 ByteConversion.ConvertIn(list, startByte, 2, headerLenBytes); startByte += 2U;
-                ByteConversion.ConvertIn(list, startByte, 2, 0U);           startByte += 2U;
-
+                ByteConversion.ConvertIn(list, startByte, 2, 0U);             startByte += 2U;
                 WriteVarChunks(list, ref startByte, dataLenBytes);
 
                 CopyBytes(self.Header, headerLenBytes, list, ref startByte);
@@ -34,15 +34,17 @@ namespace DecoLimitLifter.ExtendedSerialization
             }
             else
             {
-                // New: [0xFFFF][headerLen:UInt32][dataLen:UInt32]
-                ByteConversion.ConvertIn(list, startByte, 2, SENTINEL);     startByte += 2U;
-                ByteConversion.ConvertIn(list, startByte, 4, headerLenBytes);startByte += 4U;
-                ByteConversion.ConvertIn(list, startByte, 4, dataLenBytes);  startByte += 4U;
+                // Extended: [0xFFFF][UInt32 headerLen][UInt32 dataLen]
+                ByteConversion.ConvertIn(list, startByte, 2, SENTINEL);        startByte += 2U;
+                ByteConversion.ConvertIn(list, startByte, 4, headerLenBytes);  startByte += 4U;
+                ByteConversion.ConvertIn(list, startByte, 4, dataLenBytes);    startByte += 4U;
 
                 CopyBytes(self.Header, headerLenBytes, list, ref startByte);
                 CopyBytes(self.DataSorted, dataLenBytes, list, ref startByte);
             }
         }
+
+        private static int NeededChunks(uint n) => n == 0 ? 1 : (int)((n + (CHUNK - 1)) / CHUNK);
 
         private static void WriteVarChunks(byte[] list, ref uint start, uint toWrite)
         {
@@ -56,14 +58,10 @@ namespace DecoLimitLifter.ExtendedSerialization
             }
         }
 
-        private static int NeededChunks(uint n) => n == 0 ? 1 : (int)((n + (CHUNK - 1)) / CHUNK);
-
         private static void CopyBytes(byte[] src, uint len, byte[] dst, ref uint cursor)
         {
             for (uint i = 0; i < len; i++)
-            {
                 dst[cursor++] = src[i];
-            }
         }
     }
 }
