@@ -1,17 +1,22 @@
-using BepInEx;
+using System;
+using BrilliantSkies.Modding;         // GamePlugin / GamePlugin_PostLoad
 using HarmonyLib;
 
 namespace DecoLimitLifter
 {
-    [BepInPlugin("alb.ftd.decolimit", "Deco Limit Lifter", "1.0.0")]
-    public class Plugin : BaseUnityPlugin
+    public class FtDInterface : GamePlugin_PostLoad
     {
-        private void Awake()
+        public string name => "DecoLimitLifter";
+        public Version version => new Version(1, 0);
+
+        public void OnLoad()
         {
+            // Apply all Harmony patches in this assembly
             var harmony = new Harmony("alb.ftd.decolimit");
-            harmony.PatchAll(typeof(Plugin).Assembly);
-            Logger.LogInfo("Deco Limit Lifter loaded");
+            harmony.PatchAll(typeof(FtDInterface).Assembly);
         }
+
+        public bool AfterAllPluginsLoaded() => true;
+        public void OnSave() { }
     }
 }
-
