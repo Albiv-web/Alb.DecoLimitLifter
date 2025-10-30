@@ -14,48 +14,41 @@ namespace DecoLimitLifter.ExtendedSerialization
         {
             self._datasWrittenSorted = 0U;
 
-            // object id
+            // 1) Read object id
             self.Id = ByteConversion.ConvertOutAnUnsignedInt(fullPacket, startFrom, bytesInTheObjectId);
             startFrom += (uint)bytesInTheObjectId;
 
-            // Not enough bytes to even peek? Treat as legacy (will error out upstream if truly invalid)
-            if (startFrom + 2U > (uint)fullPacket.Length)
-                return LegacyAfterId(self, fullPacket, ref startFrom);
-
-            ushort maybe = (ushort)ByteConversion.ConvertOut(fullPacket, startFrom, 2);
-
-            if (maybe == SENTINEL && startFrom + 10U <= (uint)fullPacket.Length)
+            // 2) Peek 2 bytes to detect sentinel
+            if (startFrom + 2U <= (uint)fullPacket.Length)
             {
-                // New: [0xFFFF][headerLen:UInt32][dataLen:UInt32]
-                startFrom += 2U;
-                uint headerLen = ByteConversion.ConvertOut(fullPacket, startFrom, 4); startFrom += 4U;
-                self._totalDataLengthSorted = ByteConversion.ConvertOut(fullPacket, startFrom, 4); startFrom += 4U;
+                ushort maybe = (ushort)ByteConversion.ConvertOut(fullPacket, startFrom, 2);
+                if (maybe == SENTINEL && startFrom + 10U <= (uint)fullPacket.Length)
+                {
+                    // New: [0xFFFF][UInt32 headerLen][UInt32 dataLen]
+                    startFrom += 2U;
+                    uint headerLen = ByteConversion.ConvertOut(fullPacket, startFrom, 4); startFrom += 4U;
+                    self._totalDataLengthSorted = ByteConversion.ConvertOut(fullPacket, startFrom, 4); startFrom += 4U;
 
-                self.HeaderCount = headerLen / 7U;
+                    self.HeaderCount = headerLen / 7U;
+                    Ensure(ref self.Header, headerLen);
+                    Ensure(ref self.DataSorted, self._totalDataLengthSorted);
 
-                EnsureBuffer(ref self.Header, headerLen);
-                EnsureBuffer(ref self.DataSorted, self._totalDataLengthSorted);
+                    CopyIn(fullPacket, ref startFrom, self.Header, headerLen);
+                    CopyIn(fullPacket, ref startFrom, self.DataSorted, self._totalDataLengthSorted);
 
-                CopyIn(fullPacket, ref startFrom, self.Header, headerLen);
-                CopyIn(fullPacket, ref startFrom, self.DataSorted, self._totalDataLengthSorted);
-
-                InitReaderSegment(self, headerLen);
-                return self.Id;
+                    InitReaderSegment(self, headerLen);
+                    return self.Id;
+                }
             }
 
-            // Legacy
-            return LegacyAfterId(self, fullPacket, ref startFrom);
-        }
-
-        private static ulong LegacyAfterId(SuperLoader self, byte[] fullPacket, ref uint startFrom)
-        {
-            uint headerLen = ByteConversion.ConvertOut(fullPacket, startFrom, 2); startFrom += 2U;
-            self.HeaderCount = headerLen / 7U;
+            // Legacy: [UInt16 headerLen][UInt16 pad][var-chunk dataLen]
+            uint headerLen2 = ByteConversion.ConvertOut(fullPacket, startFrom, 2); startFrom += 2U;
+            self.HeaderCount = headerLen2 / 7U;
 
             // pad
             ByteConversion.ConvertOut(fullPacket, startFrom, 2); startFrom += 2U;
 
-            // var-chunk length
+            // var-chunk dataLen
             uint total = 0U;
             for (int i = 0; i < MAX_CHUNKS; i++)
             {
@@ -66,13 +59,13 @@ namespace DecoLimitLifter.ExtendedSerialization
             }
             self._totalDataLengthSorted = total;
 
-            EnsureBuffer(ref self.Header, headerLen);
-            EnsureBuffer(ref self.DataSorted, self._totalDataLengthSorted);
+            Ensure(ref self.Header, headerLen2);
+            Ensure(ref self.DataSorted, self._totalDataLengthSorted);
 
-            CopyIn(fullPacket, ref startFrom, self.Header, headerLen);
+            CopyIn(fullPacket, ref startFrom, self.Header, headerLen2);
             CopyIn(fullPacket, ref startFrom, self.DataSorted, self._totalDataLengthSorted);
 
-            InitReaderSegment(self, headerLen);
+            InitReaderSegment(self, headerLen2);
             return self.Id;
         }
 
@@ -84,14 +77,14 @@ namespace DecoLimitLifter.ExtendedSerialization
                 self._datasWrittenSorted = 0U;
                 return;
             }
-
-            // Replicate SuperLoader.HeaderByte(..., SortedStart):
-            uint firstSortedStart = ByteConversion.ConvertOutLegacyElements(self.Header, /*0*7 +*/ 3U);
+            // Same as SuperLoader.HeaderByte(0, SortedStart)
+            // SortedStart is the 2nd 3-byte field in 7-byte header entries → read legacy-elements at offset +3
+            uint firstSortedStart = ByteConversion.ConvertOutLegacyElements(self.Header, 3U);
             self._datasWrittenSorted = 0U;
             self._readerLengthOfSortedSegment = firstSortedStart;
         }
 
-        private static void EnsureBuffer(ref byte[] buf, uint len)
+        private static void Ensure(ref byte[] buf, uint len)
         {
             if (buf == null || (uint)buf.Length < len)
                 buf = new byte[len];
