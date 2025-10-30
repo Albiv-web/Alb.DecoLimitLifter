@@ -4,11 +4,9 @@
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
     <Deterministic>true</Deterministic>
-    <!-- If you keep Properties/AssemblyInfo.cs, leave this false so you don't get duplicate attributes -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
-  <!-- FtD game assemblies (adjust names below to match your Managed\ folder exactly) -->
   <ItemGroup>
     <!-- Always present -->
     <Reference Include="UnityEngine.CoreModule">
@@ -20,7 +18,6 @@
       <Private>false</Private>
     </Reference>
 
-    <!-- Variant A (some builds name these like this) -->
     <Reference Include="Core">
       <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\Core.dll</HintPath>
       <Private>false</Private>
@@ -34,24 +31,7 @@
       <Private>false</Private>
     </Reference>
 
-    <!-- Variant B (if your Managed\ uses BrilliantSkies.* names instead, comment A and uncomment B) -->
-    <!--
-    <Reference Include="BrilliantSkies.Core">
-      <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\BrilliantSkies.Core.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="BrilliantSkies.Ftd">
-      <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\BrilliantSkies.Ftd.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="BrilliantSkies.Ui">
-      <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\BrilliantSkies.Ui.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    -->
   </ItemGroup>
-
-  <!-- Harmony (you put 0Harmony.dll in the repo root; this path is relative to the csproj) -->
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>..\..\0Harmony.dll</HintPath>
