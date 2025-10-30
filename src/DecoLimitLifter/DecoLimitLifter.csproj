@@ -1,1 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AssemblyName>Alb.DecoLimitLifter</AssemblyName>
+    <RootNamespace>DecoLimitLifter</RootNamespace>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
 
+  <!-- Reference game assemblies without committing them.
+       Set an env var FTD_DIR to your install path. -->
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(FTD_DIR)\From_The_Depths_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="HarmonyX" Version="2.*" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" PrivateAssets="All" />
+  </ItemGroup>
+</Project>
