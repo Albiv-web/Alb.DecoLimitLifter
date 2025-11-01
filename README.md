@@ -46,7 +46,7 @@ FtD blueprints store a header and a data block. With lots of decorations, those 
        `...\Steam\steamapps\common\From The Depths\Mods\`
      * Linux (Proton) path varies; place alongside other working mods.
 3. Start the game. Enable the mod in the Mod Manager if it isn’t already.
-4. On first load you may see a brief “patch confirmation” style message — this is expected and indicates Harmony applied the patches successfully.
+4. On first load you may see a brief “patch confirmation” style message — this is expected and indicates Harmony applied the patches successfully. Will be removed later. 
 
 ---
 
