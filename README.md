@@ -18,7 +18,7 @@ Confirm patch on startup (looks like an error, isn't).
 
 ## Limitations
 
-* Vanilla FtD can’t load **sentinel** blueprints. Keep within legacy limits if you need to share without this mod.
+* Vanilla FtD can’t load **sentinel** blueprints. Keep within legacy limits (<5k decos) if you need to share without this mod.
 * Extremely huge blueprints are bounded by your configured ceilings (`Max*Bytes`).
 
 ## What it does 
