@@ -2,6 +2,8 @@
 
 First release. Might be bugs I haven't encountered: Please DM me if you encounter any, Discord username: albeeettt
 
+Confirming successful patch on startup (looks like an error, isn't).
+
 > Lift blueprint decoration limits (tested ~100k) by extending the save format.
 > Backward-compatible on load; the saver writes **legacy** when it fits and **sentinel** only when needed.
 > Not tested in multiplayer. I don't advise it either. 
@@ -52,7 +54,7 @@ First release. Might be bugs I haven't encountered: Please DM me if you encounte
 
 * Small blueprints: zero extra allocations on save/delete.
 * Large blueprints: a handful of predictable growth steps (power-of-two) with hard caps.
-* No UI spam; debug logging is off by default. Except confirming sucessful patch on startup (looks like an error, isn't). 
+* No UI spam; debug logging is off by default. Except confirming successful patch on startup (looks like an error, isn't). 
 
 ## Troubleshooting
 
