@@ -18,7 +18,7 @@ Confirm patch on startup (looks like an error, isn't).
 
 ## What it does 
 
-* Replaces the blueprint header/data length encoding, and ups limits to suppor t >5k decos. 
+* Replaces the blueprint header/data length encoding, and ups limits to support >5k decos. 
 
   * **Legacy path** – 2-byte header length + chunked (16-bit) data length.
     Used automatically when everything fits to keep vanilla compatibility.
