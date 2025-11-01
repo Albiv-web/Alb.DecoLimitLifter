@@ -73,5 +73,5 @@ First release. Might be bugs I haven't encountered: Please DM me if you encounte
 
 ## Credits
 
-* Built with Harmony, thanks to DeltaEpsilon and wolficik for help. 
+* Built with Harmony, thanks to DeltaEpsilon and wolficik for helping me get started. 
 
