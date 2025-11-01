@@ -1,80 +1,188 @@
 # Deco Limit Lifter (From The Depths)
 
-First release. Might be bugs I haven't encountered: Please DM me if you encounter any, Discord username: albeeettt
+Lift the ~5k decoration cap in **From The Depths** by extending the blueprint save format. Small crafts keep vanilla compatibility; huge crafts gain headroom without corrupting saves.
 
-Confirm patch on startup (looks like an error, isn't).
+> **TL;DR**
+>
+> * Saves and loads **vanilla** format when it fits (under the usual limits).
+> * Automatically switches to an extended **sentinel** format only when required (big crafts).
+> * Vanilla FtD can load **legacy** saves; **sentinel** saves require this mod.
 
-> Lift blueprint decoration limits (tested ~100k) by extending the save format.
-> Backward-compatible on load; the saver writes **legacy** when it fits and **sentinel** only when needed.
-> Not tested in multiplayer. I don't advise it either. 
-> Sharing note: **Legacy** saves load fine in vanilla (anything under 5k decos). **Sentinel** saves require this mod.
+---
+
+## Why this exists
+
+FtD blueprints store a header and a data block. With lots of decorations, those lengths exceed vanilla’s 16-bit limits. This mod writes a backwards-compatible “legacy” layout when it fits and a “sentinel” layout when it doesn’t, so you can build big without breaking small.
+
+---
+
+## Features
+
+* Backwards-compatible load path for both **legacy** and **sentinel** saves.
+* Auto-switching saver: prefers **legacy**, escalates to **sentinel** only when needed.
+* Sensible default buffers for small crafts; safe **auto-grow** for large crafts.
+* Runtime soft cap for decorations (default 100k).
+* Capacity guards to prevent index out-of-range and save corruption.
+* Minimal overhead for normal-sized builds; predictable growth for huge ones.
+
+---
+
+## Requirements
+
+* From The Depths (PC)
+* Harmony patching (the mod uses Harmony attributes under the hood)
+* Windows-compatible .NET runtime included with the game (no separate install for end-users)
+
+---
+
+## Installation
+
+1. Download the release (or build from source).
+2. Copy the entire **DecoLimitless** folder into your FtD **Mods** folder.
+
+   * Typical paths:
+
+     * Windows (Steam):
+       `...\Steam\steamapps\common\From The Depths\Mods\`
+     * Linux (Proton) path varies; place alongside other working mods.
+3. Start the game. Enable the mod in the Mod Manager if it isn’t already.
+4. On first load you may see a brief “patch confirmation” style message — this is expected and indicates Harmony applied the patches successfully.
+
+---
 
 ## Usage
 
-* Play as normal.
-* Small crafts save exactly like vanilla (<5k decos).
-* Big crafts (>5k decos) save using the extended format automatically.
+Just play as normal.
 
-## Limitations
-* Vanilla FtD can’t load **sentinel** blueprints. Keep within legacy limits (<5k decos) if you need to share without this mod.
-* Extremely huge blueprints are bounded by your configured ceilings (`Max*Bytes`).
+* Small/normal crafts (<5k decos): saves stay **vanilla**; fully shareable with un-modded players.
+* Big crafts (>5k decos): saves switch to **sentinel** automatically; requires this mod to load.
 
-## How to download?
-* Download and move the entire folder into your FTD mods folder. 
-
-## What it does 
-
-* Replaces the blueprint header/data length encoding, and ups limits to support >5k decos. 
-
-  * **Legacy path** – 2-byte header length + chunked (16-bit) data length.
-    Used automatically when everything fits to keep vanilla compatibility.
-  * **Sentinel path** – `0xFFFF` + 4-byte `headerLen` + 4-byte `dataLen`.
-    Kicks in only for large blueprints (more decos / more data).
-* The loader reads **both** formats. The saver prefers **legacy** and switches to **sentinel** only if required.
-
-## Highlights
-
-* On-demand buffer growth (no giant pools by default).
-* Run-once pool init; no per-save reallocation thrash.
-* Global save buffer (`ByteStore.MegaBytes`) sized sensibly at boot, with safe auto-grow.
-* Capacity guards before each write prevent overflows and index OOR.
-* Keeps small/vanilla blueprints snappy; unlocks huge decos when you need them.
-
-## How it works (short)
-
-* Harmony patches route `SuperLoader.Deserialise` and `SuperSaver.Serialise` to extended implementations.
-* If header/data exceed the legacy limits, the saver writes the **sentinel** format; otherwise it writes **vanilla**.
-* A tiny startup patch resizes `ByteStore.MegaBytes` (the big blueprint buffer) and never shrinks it.
-* Capacity guards top up `Header` and `DataSorted` justintime (next poweroftwo, bounded by caps).
+---
 
 ## Configuration (advanced)
 
-* Central knobs live in `DecoLimits.cs`:
+Tuning knobs live in `DecoLimits.cs`. Keep default values unless you consistently hit the guardrails.
 
-  * `MaxDecorations` – runtime soft cap we set on the game’s decoration manager.
-  * `SaveBufferBytes` – floor for `ByteStore.MegaBytes` (default 20 MB).
-    Increase if you build truly massive blueprints.
-  * `MaxSaveBufferBytes`, `MaxDataSortedBytes`, `MaxHeaderBytes` – safety ceilings for growth.
+| Key                  |     Default | What it controls                     |
+| -------------------- | ----------: | ------------------------------------ |
+| `MaxDecorations`     |     100 000 | Runtime soft cap on decorations      |
+| `SaveBufferBytes`    |  20 000 000 | Global save buffer floor (ByteStore) |
+| `MaxSaveBufferBytes` | 268 435 456 | Hard ceiling for global buffer       |
+| `MaxDataSortedBytes` |  67 108 864 | Hard ceiling for data block          |
+| `MaxHeaderBytes`     |   4 194 304 | Hard ceiling for header block        |
 
-## Performance 
+**Rule of thumb for giant builds**
+Recommended `SaveBufferBytes` ≈ `20 MB` + `220 bytes × decoration_count` (rounded up to next power of two).
 
-* Small blueprints: zero extra allocations on save/delete.
-* Large blueprints: a handful of predictable growth steps (poweroftwo) with hard caps.
-* No UI spam; debug logging is off by default. Except confirming successful patch on startup (looks like an error, isn't). 
+---
+
+## Compatibility & limits
+
+* **Vanilla FtD** can load **legacy** saves. It **cannot** load **sentinel** saves.
+* **Sentinel** saves are intended for single-player. Multiplayer has not been tested; don’t rely on it.
+* Extremely large blueprints are ultimately bounded by your configured ceilings.
+
+---
 
 ## Troubleshooting
 
-* **Error:** “Save buffer too small. Need X bytes, have Y.”
-  **Fix:** raise `SaveBufferBytes` (20 MB → 32 MB or 64 MB). The mod prevented corruption; you just need a bigger buffer.
-* **Harmony failed to patch (explicit interface):**
-  You’re likely on a different build. Ensure the mod files are up to date; the loader uses an interface map to resolve `ByIdHelpWrite`.
+* **“Save buffer too small. Need X bytes, have Y.”**
+  Raise `SaveBufferBytes` (e.g., 20 MB → 32 MB or 64 MB). The guard prevented corruption; you just need a larger outer buffer.
 
-## What changes in the save file?
+* **“Harmony failed to patch (explicit interface)”**
+  Usually a version mismatch. Update the mod to match your game build so method signatures resolve correctly.
 
-* **Legacy** blueprints are unchanged (still vanilla-readable).
-* **Sentinel** blueprints add: `0xFFFF` + `uint32 headerLen` + `uint32 dataLen`, followed by the usual header/data bytes.
+* **Performance feels worse on small saves**
+  Ensure you didn’t crank the buffer ceilings unnecessarily. Defaults keep small saves snappy while allowing on-demand growth.
+
+---
+
+## How it works (short)
+
+### Saver formats
+
+* **Legacy (vanilla-compatible)**
+
+  ```
+  [UInt16 headerLen][UInt16 pad=0][dataLen split into ≤100 chunks of UInt16]
+  [header bytes][data bytes]
+  ```
+
+* **Sentinel (extended)**
+
+  ```
+  [0xFFFF][UInt32 headerLen][UInt32 dataLen]
+  [header bytes][data bytes]
+  ```
+
+The loader reads **both** layouts. The saver writes **legacy** whenever possible, and **sentinel** only if any length exceeds vanilla limits.
+
+### Buffering strategy
+
+* Global outer buffer (`ByteStore.MegaBytes`) is ensured large enough at boot and never shrinks during the session.
+* Header/Data arrays grow on demand to the next power-of-two, clamped by hard ceilings.
+* Small saves reuse vanilla-sized pools; large saves take a few predictable growth steps.
+
+---
+
+## Building from source
+
+> Target framework: **.NET Framework 4.7.2**
+> IDE: Visual Studio 2017+ (or `msbuild`)
+
+1. Open `DecoLimitLifter.sln`.
+2. Add references to the game’s assemblies (e.g., `BrilliantSkies.*`) from your FtD installation.
+3. Build `Release`.
+4. Copy the produced DLL and mod files into `From The Depths\Mods\DecoLimitless\`.
+
+**Notes**
+
+* No external NuGet packages are required for the core patches.
+* If you change any constants in `DecoLimits.cs`, keep the ceilings sane to avoid OOM.
+
+---
+
+## Performance expectations
+
+* Small blueprints: no extra allocations on save/delete.
+* Large blueprints: bounded growth; guardrails prevent overruns and corruption.
+* Debug logging is quiet by default; only a brief startup confirmation is shown.
+
+---
+
+## Sharing blueprints
+
+* **Legacy**: freely share with anyone (vanilla loads fine).
+* **Sentinel**: share only with players using this mod.
+
+---
+
+## Contributing
+
+Issues and PRs are welcome. Please include:
+
+* Game build number and steps to reproduce.
+* A minimal blueprint (or counts) that triggers the problem.
+* Logs or exact exception messages.
+
+You can also DM me on Discord: **albeeettt**.
+
+---
+
+## Roadmap ideas
+
+* Safer multiplayer behavior (investigation).
+* Config UI for buffer sizing hints and ceilings.
+* Additional diagnostics toggles.
+
+---
 
 ## Credits
 
-* Built with Harmony, thanks to DeltaEpsilon and wolficik for helping me get started. 
+* Built with **Harmony**; thanks to community members who helped with early testing and interfaces.
 
+---
+
+## License
+
+MIT. See `DecoLimitless/LICENSE`.
