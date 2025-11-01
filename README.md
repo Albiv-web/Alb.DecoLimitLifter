@@ -20,7 +20,7 @@ Confirm patch on startup (looks like an error, isn't).
 * Extremely huge blueprints are bounded by your configured ceilings (`Max*Bytes`).
 
 ## How to download?
-* Download and move entire folder into your FTD mods folder. 
+* Download and move the entire folder into your FTD mods folder. 
 
 ## What it does 
 
