@@ -16,6 +16,11 @@ Confirm patch on startup (looks like an error, isn't).
 
 > Sharing note: **Legacy** saves load fine in vanilla (anything under 5k decos). **Sentinel** saves require this mod.
 
+## Limitations
+
+* Vanilla FtD can’t load **sentinel** blueprints. Keep within legacy limits if you need to share without this mod.
+* Extremely huge blueprints are bounded by your configured ceilings (`Max*Bytes`).
+
 ## What it does 
 
 * Replaces the blueprint header/data length encoding, and ups limits to support >5k decos. 
@@ -67,11 +72,6 @@ Confirm patch on startup (looks like an error, isn't).
 
 * **Legacy** blueprints are unchanged (still vanilla-readable).
 * **Sentinel** blueprints add: `0xFFFF` + `uint32 headerLen` + `uint32 dataLen`, followed by the usual header/data bytes.
-
-## Limitations
-
-* Vanilla FtD can’t load **sentinel** blueprints. Keep within legacy limits if you need to share without this mod.
-* Extremely huge blueprints are bounded by your configured ceilings (`Max*Bytes`).
 
 ## Credits
 
