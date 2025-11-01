@@ -30,7 +30,7 @@ FtD blueprints store a header and a data block. With lots of decorations, those 
 ## Requirements
 
 * From The Depths (PC)
-* Harmony patching (the mod uses Harmony attributes under the hood)
+* Harmony patching (the mod uses Harmony attributes under the hood) (not important for end-users)
 * Windows-compatible .NET runtime included with the game (no separate install for end-users)
 
 ---
@@ -159,8 +159,7 @@ The loader reads **both** layouts. The saver writes **legacy** whenever possible
 ## Sharing blueprints
 
 * **Legacy**: freely share with anyone (vanilla loads fine).
-* **Sentinel**: share only with players using this mod.
-
+* **Sentinel**: share only with players using this mod. 
 ---
 
 ## Contributing
