@@ -8,6 +8,14 @@ Confirm patch on startup (looks like an error, isn't).
 > Backward-compatible on load; the saver writes **legacy** when it fits and **sentinel** only when needed.
 > Not tested in multiplayer. I don't advise it either. 
 
+## Usage
+
+* Play as normal.
+* Small crafts save exactly like vanilla (<5k decos).
+* Big crafts (>5k decos) save using the extended format automatically.
+
+> Sharing note: **Legacy** saves load fine in vanilla (anything under 5k decos). **Sentinel** saves require this mod.
+
 ## What it does 
 
 * Replaces the blueprint header/data length encoding:
@@ -32,14 +40,6 @@ Confirm patch on startup (looks like an error, isn't).
 * If header/data exceed the legacy limits, the saver writes the **sentinel** format; otherwise it writes **vanilla**.
 * A tiny startup patch resizes `ByteStore.MegaBytes` (the big blueprint buffer) and never shrinks it.
 * Capacity guards top up `Header` and `DataSorted` just-in-time (next power-of-two, bounded by caps).
-
-> Sharing note: **Legacy** saves load fine in vanilla (anything under 5k decos). **Sentinel** saves require this mod.
-
-## Usage
-
-* Play as normal.
-* Small crafts save exactly like vanilla (<5k decos).
-* Big crafts (>5k decos) save using the extended format automatically.
 
 ## Configuration (advanced)
 
