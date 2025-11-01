@@ -59,7 +59,7 @@ First release. Might be bugs I haven't encountered: Please DM me if you encounte
 * **Error:** “Save buffer too small. Need X bytes, have Y.”
   **Fix:** raise `SaveBufferBytes` (20 MB → 32 MB or 64 MB). The mod prevented corruption; you just need a bigger buffer.
 * **Harmony failed to patch (explicit interface):**
-  You’re likely on a different build. Ensure the mod files are up to date; the loader uses an interface map to resolve `ByIdHelpWrite` robustly.
+  You’re likely on a different build. Ensure the mod files are up to date; the loader uses an interface map to resolve `ByIdHelpWrite`.
 
 ## What changes in the save file?
 
