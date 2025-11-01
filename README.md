@@ -2,7 +2,7 @@
 
 First release. Might be bugs I haven't encountered: Please DM me if you encounter any, Discord username: albeeettt
 
-Confirming successful patch on startup (looks like an error, isn't).
+Confirm patch on startup (looks like an error, isn't).
 
 > Lift blueprint decoration limits (tested ~100k) by extending the save format.
 > Backward-compatible on load; the saver writes **legacy** when it fits and **sentinel** only when needed.
