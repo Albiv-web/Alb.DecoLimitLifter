@@ -8,7 +8,7 @@ Confirm patch on startup (looks like an error, isn't).
 > Backward-compatible on load; the saver writes **legacy** when it fits and **sentinel** only when needed.
 > Not tested in multiplayer. I don't advise it either. 
 
-## What it does
+## What it does 
 
 * Replaces the blueprint header/data length encoding:
 
