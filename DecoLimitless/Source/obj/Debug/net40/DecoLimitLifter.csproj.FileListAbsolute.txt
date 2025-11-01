@@ -1,0 +1,2 @@
+F:\FTD saves\From The Depths\Mods\DecoLimitless\Source\obj\Debug\net40\DecoLimitLifter.csprojAssemblyReference.cache
+F:\FTD saves\From The Depths\Mods\DecoLimitless\Source\obj\Debug\net40\DecoLimitLifter.csproj.CoreCompileInputs.cache
