@@ -1,7 +1,10 @@
 # Deco Limit Lifter (From The Depths)
 
+First release. Might be bugs I haven't encountered: Please DM me if you encounter any, Discord username: albeeettt
+
 > Lift blueprint decoration limits (tested ~100k) by extending the save format.
 > Backward-compatible on load; the saver writes **legacy** when it fits and **sentinel** only when needed.
+> Not tested in multiplayer. I don't advise it either. 
 
 ## What it does
 
