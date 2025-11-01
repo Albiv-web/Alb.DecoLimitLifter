@@ -104,15 +104,21 @@ Recommended `SaveBufferBytes` ≈ `20 MB` + `220 bytes × decoration_count` (rou
 * **Legacy (vanilla-compatible)**
 
   ```
-  [UInt16 headerLen][UInt16 pad=0][dataLen split into ≤100 chunks of UInt16]
-  [header bytes][data bytes]
+  [UInt16 headerLen]
+  [UInt16 pad=0]
+  [dataLen split into ≤100 chunks of UInt16]
+  [header bytes]
+  [data bytes]
   ```
 
 * **Sentinel (extended)**
 
   ```
-  [0xFFFF][UInt32 headerLen][UInt32 dataLen]
-  [header bytes][data bytes]
+  [0xFFFF]
+  [UInt32 headerLen]
+  [UInt32 dataLen]
+  [header bytes]
+  [data bytes]
   ```
 
 The loader reads **both** layouts. The saver writes **legacy** whenever possible, and **sentinel** only if any length exceeds vanilla limits.
@@ -159,7 +165,7 @@ The loader reads **both** layouts. The saver writes **legacy** whenever possible
 
 ## Contributing
 
-Issues and PRs are welcome. Please include:
+Issues, bugs and PRs are welcome. Please include:
 
 * Game build number and steps to reproduce.
 * A minimal blueprint (or counts) that triggers the problem.
@@ -169,17 +175,17 @@ You can also DM me on Discord: **albeeettt**.
 
 ---
 
-## Roadmap ideas
+## Roadmap / future ideas
 
 * Safer multiplayer behavior (investigation).
 * Config UI for buffer sizing hints and ceilings.
-* Additional diagnostics toggles.
+* Additional diagnostics toggles, sentinel / legacy pre-viewer. 
 
 ---
 
 ## Credits
 
-* Built with **Harmony**; thanks to community members who helped with early testing and interfaces.
+* Built with **Harmony**; thanks to community members who helped with early testing and interfaces: DeltaEpsilon & wolficik
 
 ---
 
