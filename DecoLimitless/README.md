@@ -7,10 +7,21 @@ Confirm patch on startup (looks like an error, isn't).
 > Lift blueprint decoration limits (tested ~100k) by extending the save format.
 > Backward-compatible on load; the saver writes **legacy** when it fits and **sentinel** only when needed.
 > Not tested in multiplayer. I don't advise it either. 
+> Sharing note: **Legacy** saves load fine in vanilla (anything under 5k decos). **Sentinel** saves require this mod.
+
+## Usage
+
+* Play as normal.
+* Small crafts save exactly like vanilla (<5k decos).
+* Big crafts (>5k decos) save using the extended format automatically.
+
+## Limitations
+* Vanilla FtD can’t load **sentinel** blueprints. Keep within legacy limits (<5k decos) if you need to share without this mod.
+* Extremely huge blueprints are bounded by your configured ceilings (`Max*Bytes`).
 
 ## What it does 
 
-* Replaces the blueprint header/data length encoding:
+* Replaces the blueprint header/data length encoding, and ups limits to support >5k decos. 
 
   * **Legacy path** – 2-byte header length + chunked (16-bit) data length.
     Used automatically when everything fits to keep vanilla compatibility.
@@ -31,15 +42,7 @@ Confirm patch on startup (looks like an error, isn't).
 * Harmony patches route `SuperLoader.Deserialise` and `SuperSaver.Serialise` to extended implementations.
 * If header/data exceed the legacy limits, the saver writes the **sentinel** format; otherwise it writes **vanilla**.
 * A tiny startup patch resizes `ByteStore.MegaBytes` (the big blueprint buffer) and never shrinks it.
-* Capacity guards top up `Header` and `DataSorted` just-in-time (next power-of-two, bounded by caps).
-
-> Sharing note: **Legacy** saves load fine in vanilla (anything under 5k decos). **Sentinel** saves require this mod.
-
-## Usage
-
-* Play as normal.
-* Small crafts save exactly like vanilla (<5k decos).
-* Big crafts (>5k decos) save using the extended format automatically.
+* Capacity guards top up `Header` and `DataSorted` justintime (next poweroftwo, bounded by caps).
 
 ## Configuration (advanced)
 
@@ -53,7 +56,7 @@ Confirm patch on startup (looks like an error, isn't).
 ## Performance 
 
 * Small blueprints: zero extra allocations on save/delete.
-* Large blueprints: a handful of predictable growth steps (power-of-two) with hard caps.
+* Large blueprints: a handful of predictable growth steps (poweroftwo) with hard caps.
 * No UI spam; debug logging is off by default. Except confirming successful patch on startup (looks like an error, isn't). 
 
 ## Troubleshooting
@@ -67,11 +70,6 @@ Confirm patch on startup (looks like an error, isn't).
 
 * **Legacy** blueprints are unchanged (still vanilla-readable).
 * **Sentinel** blueprints add: `0xFFFF` + `uint32 headerLen` + `uint32 dataLen`, followed by the usual header/data bytes.
-
-## Limitations
-
-* Vanilla FtD can’t load **sentinel** blueprints. Keep within legacy limits if you need to share without this mod.
-* Extremely huge blueprints are bounded by your configured ceilings (`Max*Bytes`).
 
 ## Credits
 
